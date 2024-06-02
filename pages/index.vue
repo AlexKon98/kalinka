@@ -3,11 +3,11 @@
     <section class="developers">
       <h1 class="developers__title">Список застройщиков</h1>
 
-      <!-- <DevelopersList :devs="developers.value" /> -->
+      <DevelopersList :devs="developers.value" />
     </section>
 
     <section class="pagination">
-      <!-- <PaginationList @step-changed="changeStep" :total="total" /> -->
+      <PaginationList @step-changed="changeStep" :total="total" />
     </section>
   </div>
 </template>
@@ -29,12 +29,10 @@ useHead({
 const route = useRoute();
 const developers = reactive({});
 const total = ref(0);
-let page, length;
+let page;
 
 const SSRreq = async () => {
   // data = await Api.SSRrequest();
-  // developers.value = data[0].value;
-  // total.value = Math.ceil(Number(data[1]) / 10);
 }
 
 if (!route.query.page) {
@@ -43,14 +41,15 @@ if (!route.query.page) {
   page = route.query.page;
 }
 
-const { data } = await useFetch(Api.API_BASE_URL + `/objects`, {
+let length = ref(0);
+const { data } = await useFetch(Api.API_BASE_URL + `/objects?_page=${page}`, {
   onResponse(context) {
-    console.log(context.response.headers)
-    console.log(context.response.headers.get(['X - Total - Count']))
+    length.value = context.response.headers.get('X-Total-Count');
   }
 });
-
-console.log(length)
+developers.value = data.value;
+total.value = Math.ceil(Number(length.value) / 10);
+console.log(length.value)
 
 const changeStep = async () => {
   data = await Api.dataTwice(`/objects?_page=${String(route.query.page)}`);

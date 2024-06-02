@@ -49,8 +49,8 @@ import SliderImages from '@/components/DetailPage/SliderImages.vue';
 
 const route = useRoute();
 
-let data = await Api.SSRrequest('/objects?id=' + route.params.id);
-const developer = reactive({ value: data[0].value });
+let { data } = await Api.SSRrequest('/objects?id=' + route.params.id);
+const developer = reactive({ value: data.value });
 
 useHead({
   title: developer?.value[0]?.title?.ru,
